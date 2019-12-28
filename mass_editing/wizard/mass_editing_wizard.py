@@ -282,7 +282,6 @@ class MassEditingWizard(models.TransientModel):
                     self.env.context.get('active_ids')).write(values)
         return super(MassEditingWizard, self).create({})
 
-    @api.multi
     def action_apply(self):
         return {'type': 'ir.actions.act_window_close'}
 

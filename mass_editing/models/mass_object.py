@@ -44,7 +44,6 @@ class MassObject(models.Model):
                                    inherits_model_list.ids or []))
         self.model_list = model_list
 
-    @api.multi
     def create_action(self):
         self.ensure_one()
         vals = {}
@@ -55,32 +54,27 @@ class MassObject(models.Model):
             'name': button_name,
             'type': 'ir.actions.act_window',
             'res_model': 'mass.editing.wizard',
-            'src_model': src_obj,
-            'view_type': 'form',
             'context': "{'mass_editing_object' : %d}" % (self.id),
             'view_mode': 'form',
             'target': 'new',
             'binding_model_id': self.model_id.id,
             'binding_type': 'action',
-            'multi': True,
+            'binding_view_types': 'list',
         }).id
         self.write(vals)
         return True
 
-    @api.multi
     def unlink_action(self):
         self.mapped('ref_ir_act_window_id').unlink()
         return True
 
-    @api.multi
     def unlink(self):
         self.unlink_action()
         return super(MassObject, self).unlink()
 
-    @api.multi
-    @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         if default is None:
             default = {}
         default.update({'name': _("%s (copy)" % self.name), 'field_ids': []})
-        return super(MassObject, self).copy(default)
+        copy = super(MassObject, self).copy(default)
+        return copy.id
